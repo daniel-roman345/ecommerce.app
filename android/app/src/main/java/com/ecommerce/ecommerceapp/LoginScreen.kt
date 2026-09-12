@@ -16,8 +16,15 @@ import kotlinx.coroutines.launch
 
 // @Composable convierte esta función en una "pieza de interfaz" que Compose puede
 // dibujar y redibujar sola cuando cambian sus datos (eso se llama recomposición).
+//
+// GUÍA 4: ahora la pantalla recibe onLoginSuccess, una FUNCIÓN que avisa "el login
+// salió bien" y entrega el nombre del usuario. Así esta pantalla NO decide a dónde
+// ir después (eso es trabajo de MainActivity): solo informa. A ese patrón se le
+// llama "elevar el estado" y evita que las pantallas queden amarradas entre sí.
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    onLoginSuccess: (String) -> Unit = {}
+) {
     // --- ESTADO de la pantalla ---
     // remember: hace que el valor SOBREVIVA a las recomposiciones (no se reinicia
     //           cada vez que la pantalla se redibuja).
@@ -85,9 +92,9 @@ fun LoginScreen() {
                         )
                         if (response.isSuccessful) {  // ¿código HTTP 2xx (éxito)?
                             val body = response.body()  // cuerpo ya traducido a LoginResponse
-                            result = "${body?.message}\n" +
-                                     "Bienvenido: ${body?.user?.UserName}\n" +
-                                     "Token: ${body?.token?.take(25)}..."
+                            // GUÍA 4: en vez de quedarnos mostrando el token, avisamos
+                            // que el login funcionó para pasar a la lista de productos.
+                            onLoginSuccess(body?.user?.UserName ?: "")
                         } else {
                             // El servidor respondió pero rechazó (ej. 401: credenciales malas).
                             result = "Credenciales inválidas (código ${response.code()})"
