@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Sin este permiso la app compila, pero NINGUNA petición sale al servidor. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Inventario Tienda"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.InventarioTienda"
+        android:usesCleartextTraffic="true">
+        <!-- usesCleartextTraffic="true" permite HTTP sin cifrar. Es necesario porque
+             el backend local corre en http://10.0.2.2:5050 y no en https.
+             En una app publicada esto se quita y se usa HTTPS. -->
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>
