@@ -15,7 +15,20 @@ def create_app():
     
     # Configuración
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'HolaMundo')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///database/ecommerce.db')
+    # La ruta de la base se arma ABSOLUTA a proposito.
+    #
+    # Con la ruta relativa 'sqlite:///database/ecommerce.db', Flask-SQLAlchemy
+    # la resuelve contra la carpeta instance/ de la aplicacion, es decir
+    # <proyecto>/instance/database/ecommerce.db. Esa carpeta no existe y SQLite
+    # no crea carpetas, asi que el arranque moria con:
+    #     sqlite3.OperationalError: unable to open database file
+    # aunque la base si estuviera creada en <proyecto>/database/ecommerce.db.
+    #
+    # Se usan barras normales porque SQLAlchemy las espera en la URL incluso
+    # en Windows. DATABASE_URL sigue teniendo prioridad, para el despliegue.
+    raiz_del_proyecto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    ruta_base = os.path.join(raiz_del_proyecto, 'database', 'ecommerce.db').replace('\\', '/')
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///' + ruta_base)
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['JSON_AS_ASCII'] = False  # Para caracteres especiales en JSON
     
